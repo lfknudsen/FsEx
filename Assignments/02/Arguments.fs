@@ -10,7 +10,7 @@ type Config() =
 
         member this.continueOnFailure = _continueOnFailure
         member this.verbose = _verbose
-        member this.printFailedTestIndices = _printFailedTestIndices
+        member this.printFailedTestNumbers = _printFailedTestIndices
         member this.showOnlyFailures = _showOnlyFailures
 
 
@@ -22,7 +22,7 @@ type Config() =
             _verbose <- b
             this
 
-        member this.setPrintFailedTestIndices b =
+        member this.setPrintFailedTestNumbers b =
             _printFailedTestIndices <- b
             this
 
@@ -42,7 +42,7 @@ let parameters (config: Config) =
       ('q', "quiet", config.setVerbose, false, "Show only the cumulative results.")
       ('l',
        "list",
-       config.setPrintFailedTestIndices,
+       config.setPrintFailedTestNumbers,
        true,
        "Print a list of the failed test cases at the end.") ]
 
@@ -77,7 +77,7 @@ let rec _parseArgs args config : Config =
         | "-q"
         | "--quiet" -> _parseArgs tail (config.setVerbose false)
         | "-l"
-        | "--list" -> _parseArgs tail (config.setPrintFailedTestIndices true)
+        | "--list" -> _parseArgs tail (config.setPrintFailedTestNumbers true)
         | "-f"
         | "--failures" -> _parseArgs tail (config.setShowOnlyFailures true)
         | "-h"

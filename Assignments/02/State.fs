@@ -14,7 +14,7 @@ type TestState(config: Arguments.Config) =
         /// this represents the total number of tests.
         let mutable _lastTestNumber = 0u
 
-        /// Unused.
+        /// Contains the test numbers of failed tests.
         let mutable _failedTests = []
 
         /// Holds the name of the current section of tests. Used to delineate
@@ -24,9 +24,6 @@ type TestState(config: Arguments.Config) =
         /// If true, the next call to TestState.print will also print the
         /// name of the current region.
         let mutable _regionHasChangedSinceLastPrint = false
-
-        let addFailure (testNumber: uint) = _failedTests <- _failedTests @ [ testNumber ]
-
 
         /// The number of successful tests.
         member this.successes = _successes
@@ -50,8 +47,7 @@ type TestState(config: Arguments.Config) =
         /// Default is true. Override with --quiet or -q.
         member this.verbose = config.verbose
 
-        /// Call to increment the number of successes.
-        member this.incrementSuccesses() = _successes <- _successes + 1u
+        member this.printFailedTests = config.printFailedTestNumbers
 
         member this.nextTest() =
             _lastTestNumber <- _lastTestNumber + 1u
@@ -60,15 +56,16 @@ type TestState(config: Arguments.Config) =
         /// Called when a test succeeds.
         member this.onSuccess() =
             this.print ": SUCCESS\n"
-            this.incrementSuccesses ()
+            _successes <- _successes + 1u
 
         /// Called when a test fails.
+        /// Prints the failure-string if verbose printing is turned on.
+        /// Depending on configuration, it may also throw an exception
+        /// or add the failing test number to a list.
         member this.onFailure(msg: string) =
             this.print ": FAILED\n"
 
-            if this.continueOnFailure then
-                _failedTests <- _failedTests @ [ _lastTestNumber ]
-            else
+            if not config.continueOnFailure then
                 failwith (
                     "Assertion failure "
                     + if _region.Length > 0 then
@@ -80,6 +77,8 @@ type TestState(config: Arguments.Config) =
                     + ":\n"
                     + msg
                 )
+            else if (config.printFailedTestNumbers || config.showOnlyFailures) then
+                _failedTests <- _failedTests @ [ _lastTestNumber ]
             ()
 
         /// Call to start a new section of tests.
