@@ -1,3 +1,24 @@
+(*
+    This programme is as much a test suite for the first mandatory assignment
+    as it was me experimenting a bit with F#.
+    Targets .NET 8.0 because I couldn't remember which the course recommended,
+    but I felt quite confident it wasn't the current version. You can probably
+    change it if you've got an even older version installed.
+
+    To use this with your Assignment1.fs, put it into the same directory
+    as this file.
+
+    This file/project defines a console application that you would run in the
+    same way as any other, e.g. with 'dotnet run'.
+    'dotnet test' won't do anything.
+    A run configuration file is included for JetBrains' IDEs.
+
+    Supports the command-line argument
+    --continue or -c
+        Makes the programme continue running if a test fails.
+        If this is omitted, a failed test will immediately throw an exception.
+
+ *)
 module Tests
 
 open System
