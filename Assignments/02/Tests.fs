@@ -3,12 +3,6 @@
 open System
 open Assignment2
 
-let rec dup (str : string) (n : int) =
-    if n <= 0 then
-        ""
-    else
-        str + dup str (n - 1)
-
 let prefixSpace s (width : int) =
     let str = string s
     if width <= 0 || str.Length >= width then
