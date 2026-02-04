@@ -1,6 +1,9 @@
 # Created by https://www.toptal.com/developers/gitignore/api/fsharp,dotnetcore,rider,visualstudio
 # Edit at https://www.toptal.com/developers/gitignore?templates=fsharp,dotnetcore,rider,visualstudio
 
+### Custom ###
+Assignment*.fs
+
 ### DotnetCore ###
 # .NET Core build folders
 bin/
