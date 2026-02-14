@@ -144,7 +144,7 @@ type Config =
             {
                 continueOnFailure = c.continueOnFailure
                 verbose = c.verbose
-                quiet = c.verbose
+                quiet = c.quiet
                 printFailedTestNumbers = c.printFailedTests
                 showOnlyFailures = c.showOnlyFailures
             }
@@ -154,4 +154,11 @@ type Config =
 
         static member parse (args : string array) =
             Config(args)
+
+        override this.ToString() =
+            "-c: " + string this.continueOnFailure +
+            "-v: " + string this.verbose +
+            "-q: " + string this.quiet +
+            "-l: " + string this.printFailedTestNumbers +
+            "-f: " + string this.showOnlyFailures
     end
