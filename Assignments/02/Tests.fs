@@ -6,26 +6,31 @@
 
 module a02.Tests
 
-open System
 open Assignment2
+open Arguments
 open Assertions
 open State
-open a02
 
+/// Test programme. Returns the number of failed tests.
+/// See 'Arguments' for command-line arguments.
 [<EntryPoint>]
 let main args =
-    let config = Arguments.parseArgs (List.ofArray args)
-    let state = TestState config
+    // Setup options and state
+    let config : Config = Config args
+    let state : TestState = TestState config
 
-    // These definitions allow us to make the function calls later less verbose.
+    // These partial applications allow us to make the function calls later less verbose.
+    // See the wrapped functions' comments for details.
 
     let test (expected: 'a) (actual: 'a) = assertEqual expected actual state
     let testThrows func arg = assertThrows func arg state
     let testThrows2 func arg1 arg2 = assertThrows2 func arg1 arg2 state
-
     let testAll (expected: 'a list) (actual: 'a list) (f: 'a -> 'a) =
         assertAll expected actual f state
     let testEach (inputs: ('a * 'b) list) (f: 'b -> 'a) = assertEach inputs f state
+
+    //==========================================================================
+    // Begin actual tests
 
     state.setRegion "downto1"
 
@@ -55,11 +60,14 @@ let main args =
     test (downto1 -1) (downto3 -1)
 
     state.setRegion "removeOddIdx"
-
+    // Remember: removeOddIdx does the opposite of what the name implies.
+    // keepOddIdx or takeOddIdx would be more appropriate.
     test [] (removeOddIdx [])
-    test [] (removeOddIdx [ "" ])
-    test [ "b" ] (removeOddIdx [ "a"; "b" ])
-    test [ 2; 4; 6; 8 ] (removeOddIdx [ 1; 2; 3; 4; 5; 6; 7; 8; 9 ])
+    test [""] (removeOddIdx [ "" ])
+    test [1; 3; 5] (removeOddIdx [1;2;3;4;5])
+    test [1; 3] (removeOddIdx [1;2;3;4])
+    test [ "a" ] (removeOddIdx [ "a"; "b" ])
+    test [ 1; 3; 5; 7; 9 ] (removeOddIdx [ 1; 2; 3; 4; 5; 6; 7; 8; 9 ])
 
     state.setRegion "combinePair"
 
@@ -276,9 +284,8 @@ let main args =
     testEach palindrome2Input palindrome2
     testEach palindrome2Input palindrome3
     testEach palindrome2Input palindrome4
-    testEach palindrome2Input palindrome5
 
-    state.setRegion "complex numbers"
+    state.setRegion "complex numbers: creation"
 
     test (complex (0, 0)) (mkComplex 0 0)
     test (complex (0.25, 5.0)) (mkComplex 0.25 5.0)
@@ -287,6 +294,12 @@ let main args =
 
     let zero = complex (0, 0)
     let c1 = complex (1, 1)
+    let c2 = complex (2, 2)
+    let c4 = complex (4, 4)
+    let cm1 = complex (-1, -1)
+
+    state.setRegion "complex numbers: 0+i0 & 0+i0"
+
     test zero (zero |+| zero)
     test zero (zero |-| zero)
     test zero (zero |*| zero)
@@ -294,13 +307,18 @@ let main args =
     testThrows2 (|/|) zero zero
     test zero (-zero)
 
-    Console.WriteLine(
-        string state.successes
-        + "/"
-        + string state.lastTestNumber
-        + " tests completed successfully."
-    )
-    if state.failedTests.Length > 0 then
-        Console.WriteLine(Strings.formatList state.failedTests ", ")
+    state.setRegion "complex numbers: 1+i1 & 1+i1"
+    test c2 (c1 |+| c1)
+    test zero (c1 |-| c1)
+    test (complex(0.0, 2.0)) (c1 |*| c1)
+    test (complex(1.0, 0.0)) (c1 |/| c1)
+    test cm1 (- c1)
 
+    state.setRegion "complex numbers: 2+i2 & 2+i2"
+    test c4 (c2 |+| c2)
+    test c1 (c2 |-| c1)
+    test (complex(0.0, 8.0)) (c2 |*| c2)
+    test (complex(1.0, 0.0)) (c2 |/| c2)
+
+    state.printResults()
     int state.lastTestNumber - int state.successes
