@@ -2,6 +2,9 @@ module a02.Assertions
 
 open State
 
+/// <summary>
+/// Return a useful failure message.
+/// </summary>
 let failureMsg expected actual input =
     ("Expected "
      + (string expected)
@@ -12,15 +15,20 @@ let failureMsg expected actual input =
      + string input
      + "'\n")
 
+/// <summary>
 /// Called by assertEach as an alternative to assertEqual.
+///
 /// It differs from assertEqual in that it returns a boolean indicating success
 /// instead of calling onSuccess and onFailure.
+/// </summary>
 let assertIndividual expected actual (state: TestState) : bool =
     state.nextTest ()
     expected = actual
 
+/// <summary>
 /// Applies 'f' to 'input', and then asserts that the result is equal to
 /// 'expected'.
+/// </summary>
 let assertApply expected f input (state: TestState) =
     state.nextTest ()
     let actual = f input
@@ -49,8 +57,10 @@ let assertEqual expected actual (state: TestState) =
     else
         state.onFailure ("Expected " + (string expected) + " but was " + (string actual) + ".")
 
+/// <summary>
 /// Asserts that applying the function 'func' to 'arg' will
 /// cause an exception to be thrown.
+/// </summary>
 let assertThrows (func: 'a -> 'b) (arg: 'a) (state: TestState) =
     state.nextTest ()
 
@@ -60,8 +70,10 @@ let assertThrows (func: 'a -> 'b) (arg: 'a) (state: TestState) =
     with _ ->
         state.onSuccess ()
 
+/// <summary>
 /// Asserts that applying function 'func' to the two (non-tuple) arguments
 /// 'arg1' and 'arg2' causes an exception to be thrown.
+/// </summary>
 let assertThrows2 (func: 'a -> 'a -> 'b) (arg1: 'a) (arg2: 'a) (state: TestState) =
     state.nextTest ()
 
@@ -71,6 +83,7 @@ let assertThrows2 (func: 'a -> 'a -> 'b) (arg1: 'a) (arg2: 'a) (state: TestState
     with _ ->
         state.onSuccess ()
 
+/// <summary>
 /// Given a list of expected outputs, a list of matching incomes, and a
 /// function to apply to each one of these inputs, calls assertIndividual for each
 /// element.
@@ -78,6 +91,7 @@ let assertThrows2 (func: 'a -> 'a -> 'b) (arg1: 'a) (arg2: 'a) (state: TestState
 /// include the input, as well as the expected and actual values.
 /// A convenience function for when testing the same function on many different
 /// inputs.
+/// </summary>
 let rec assertAll (expected: 'a list) (input: 'a list) (f: 'a -> 'a) (state: TestState) =
     match (expected.Length, input.Length) with
     | 0, 0 -> ()
@@ -93,10 +107,13 @@ let rec assertAll (expected: 'a list) (input: 'a list) (f: 'a -> 'a) (state: Tes
 
         assertAll expected.Tail input.Tail f state
 
+/// <summary>
 /// Very similar to assertAll, but receives the expected and input values as a
 /// list of matching pairs; (expected, input).
-/// As opposed to assertEqual, the assertion failure exception message will
-/// include the input in addition to expected and actual values.
+///
+/// The assertion failure exception message will include the input in
+/// addition to expected and actual values.
+/// </summary>
 let rec assertEach (lst: ('a * 'b) list) (f: 'b -> 'a) (state: TestState) =
     match lst with
     | [] -> ()
