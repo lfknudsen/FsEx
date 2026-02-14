@@ -2,10 +2,8 @@ module a02.State
 
 open System
 
-/// Holds the state of this programme and encapsulates functionality
-/// related to its members.
-/// Mostly used to be able to print results in a useful manner.
-type TestState(config: Arguments.Config) =
+/// Holds the state of this programme.
+type TestState(config: Arguments.Config, testNumberDigits: int) =
     class
         /// The number of successful tests.
         let mutable _successes = 0u
@@ -14,7 +12,8 @@ type TestState(config: Arguments.Config) =
         /// this represents the total number of tests.
         let mutable _lastTestNumber = 0u
 
-        /// Contains the test numbers of failed tests.
+        /// Contains the test numbers of failed tests. Will be printed at the
+        /// end if 'config.printFailedTestNumbers' is true.
         let mutable _failedTests = []
 
         /// Holds the name of the current section of tests. Used to delineate
@@ -25,6 +24,12 @@ type TestState(config: Arguments.Config) =
         /// name of the current region.
         let mutable _regionHasChangedSinceLastPrint = false
 
+        /// Used for aligning test numbers displayed when printing individual
+        /// test results. If the current test number has fewer digits
+        /// than this, whitespace will be prefixed so that it reaches this
+        /// amount of characters.
+        let _testNumberDigits = testNumberDigits
+
         /// The number of successful tests.
         member this.successes = _successes
 
@@ -32,30 +37,29 @@ type TestState(config: Arguments.Config) =
         /// this represents the total number of tests.
         member this.lastTestNumber = _lastTestNumber
 
-        /// Unused.
-        member this.failedTests = _failedTests
+        new (config : Arguments.Config) =
+            TestState(config, 4)
 
-        /// Holds the name of the current section of tests. Used to delineate
-        /// tests for better readability/understandability.
-        member this.currentRegion = _region
-
-        /// If true, a failed assertion does not throw an exception.
-        /// Default is true. Override with --break or -b.
-        member this.continueOnFailure = config.continueOnFailure
-
-        /// If true, print all results, not just the cumulative final results.
-        /// Default is true. Override with --quiet or -q.
-        member this.verbose = config.verbose
-
-        member this.printFailedTests = config.printFailedTestNumbers
-
+        /// Updates test number and prints it to the standard output.
+        /// If the region has been updated since last, the new region name
+        /// is also printed.
         member this.nextTest() =
             _lastTestNumber <- _lastTestNumber + 1u
-            Strings.prefixSpace _lastTestNumber 4 |> this.print
+
+        member private this.printRegion() =
+            if _regionHasChangedSinceLastPrint then
+                Console.WriteLine("--- " + _region + ":")
+                _regionHasChangedSinceLastPrint <- false
 
         /// Called when a test succeeds.
         member this.onSuccess() =
-            this.print ": SUCCESS\n"
+            if (not config.quiet) && config.verbose && (not config.showOnlyFailures) then
+                this.printRegion()
+                let num = Strings.prefixSpace _lastTestNumber _testNumberDigits
+                Console.Write("{0}: ", num)
+                Console.ForegroundColor <- ConsoleColor.Green
+                Console.Write("SUCCESS\n")
+                Console.ResetColor()
             _successes <- _successes + 1u
 
         /// Called when a test fails.
@@ -63,7 +67,13 @@ type TestState(config: Arguments.Config) =
         /// Depending on configuration, it may also throw an exception
         /// or add the failing test number to a list.
         member this.onFailure(msg: string) =
-            this.print ": FAILED\n"
+            if (not config.quiet) && (config.verbose || config.showOnlyFailures) then
+                this.printRegion()
+                let num = Strings.prefixSpace _lastTestNumber _testNumberDigits
+                Console.Write("{0}: ", num)
+                Console.ForegroundColor <- ConsoleColor.Red
+                Console.Write("FAILED\n")
+                Console.ResetColor()
 
             if not config.continueOnFailure then
                 failwith (
@@ -77,23 +87,30 @@ type TestState(config: Arguments.Config) =
                     + ":\n"
                     + msg
                 )
-            else if (config.printFailedTestNumbers || config.showOnlyFailures) then
+            if config.printFailedTestNumbers then
                 _failedTests <- _failedTests @ [ _lastTestNumber ]
-            ()
 
         /// Call to start a new section of tests.
+        /// The new region name will be printed before the next test's results.
         member this.setRegion(name: string) =
             _region <- name
             _regionHasChangedSinceLastPrint <- true
 
-        /// Call to print the given 'msg' if 'this.verbose' is true.
-        /// Used to print individual test results.
-        member this.print msg =
-            if this.verbose then
-                if _regionHasChangedSinceLastPrint then
-                    Console.WriteLine("--- " + _region + ":")
-                    _regionHasChangedSinceLastPrint <- false
+        member this.printResults() =
+            if (not config.quiet) then
+                if config.verbose && (not config.showOnlyFailures) && _lastTestNumber > 0u then
+                    Console.WriteLine()
+                else if config.showOnlyFailures && (_successes <> _lastTestNumber) && _lastTestNumber > 0u then
+                    Console.WriteLine()
 
-                Console.Write(string msg)
+                if _successes = _lastTestNumber then
+                    Console.Write("All {0} tests were successful.\n", _successes)
+                else
+                    Console.Write("{0}/{1} tests completed successfully.\n",
+                                      _successes,
+                                      _lastTestNumber)
+                    if config.printFailedTestNumbers then
+                        Console.Write("Failed test numbers:\n{0}\n",
+                                      (Strings.formatList _failedTests ", "))
 
     end
