@@ -156,9 +156,9 @@ type Config =
             Config(args)
 
         override this.ToString() =
-            "-c: " + string this.continueOnFailure +
-            "-v: " + string this.verbose +
-            "-q: " + string this.quiet +
-            "-l: " + string this.printFailedTestNumbers +
-            "-f: " + string this.showOnlyFailures
+            "-c: " + string this.continueOnFailure + "\n" +
+            "-v: " + string this.verbose + "\n" +
+            "-q: " + string this.quiet + "\n" +
+            "-l: " + string this.printFailedTestNumbers + "\n" +
+            "-f: " + string this.showOnlyFailures + "\n"
     end
