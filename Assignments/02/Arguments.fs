@@ -20,7 +20,12 @@ type private Param =
         }
 
         override this.ToString() =
-            "\t-" + string this.short + "\n\t--" + string this.long + ":\t\t" + string this.desc + "\n"
+            let extraTab =
+                if this.long.Length < 5 then
+                    "\t"
+                else
+                    ""
+            "\t-" + string this.short + "\n\t--" + string this.long + ":\t\t" + extraTab + string this.desc + "\n"
     end
 
 type private Params =
@@ -44,7 +49,10 @@ type private Params =
 
         /// Pretty print usage information.
         static member printHelp =
-            Console.WriteLine("Usage: dotnet run -- [<Options>...]\n\nOptions (all case-insensitive):\n")
+            Console.WriteLine("Usage: dotnet run -- [<Options>...]\n
+Exit code is equal to number of failed tests, or -1 if given unrecognised option.
+
+Options (all case-insensitive):\n")
 
             let rec _printParameters (parameters : Param list) =
                 match parameters with
