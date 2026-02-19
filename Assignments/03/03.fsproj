@@ -9,7 +9,6 @@
     <ItemGroup>
         <Compile Include="Assignment3.fs" />
         <Compile Include="Tests.fs"/>
-        <Compile Include="Utils.fs" />
     </ItemGroup>
 
     <ItemGroup>
