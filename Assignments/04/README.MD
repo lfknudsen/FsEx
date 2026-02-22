@@ -1,5 +1,9 @@
 ﻿# Assignment 4 Tests
 
+The tests assume you solved the exercises using the function signatures outlined
+in the "green" questions section, i.e. using `int option` and `bool option`
+instead of `Result`.
+
 Put the project directory `Assignment4` (the innermost one) into the
 root directory of this solution, `Assignments`:
 
