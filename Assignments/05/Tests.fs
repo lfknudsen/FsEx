@@ -1,7 +1,9 @@
 ﻿module Tests
 
+open Interpreter.Eval
+open Interpreter.Language
 open Interpreter.State
-open System
+open Option
 open Xunit
 
 [<Fact>]
@@ -32,15 +34,15 @@ let TestValidVariableName () =
 [<Fact>]
 let TestState () =
     Assert.Equal<int option>(None, () |> mkState |> getVar "x")
-    Assert.Equal<int option>(Some 0, () |> mkState |> declare "x" |> Option.bind (getVar "x"))
+    Assert.Equal<int option>(Some 0, () |> mkState |> declare "x" |> bind (getVar "x"))
 
     Assert.Equal<int option>(
         Some 42,
         ()
         |> mkState
         |> declare "x"
-        |> Option.bind (setVar "x" 42)
-        |> Option.bind (getVar "x")
+        |> bind (setVar "x" 42)
+        |> bind (getVar "x")
     )
 
     Assert.Equal<int option>(
@@ -48,6 +50,29 @@ let TestState () =
         ()
         |> mkState
         |> declare "1x"
-        |> Option.bind (setVar "1x" 42)
-        |> Option.bind (getVar "1x")
+        |> bind (setVar "1x" 42)
+        |> bind (getVar "1x")
     )
+
+[<Fact>]
+let TestAExprEval () =
+    let emptyState = mkState ()
+    let st = emptyState |> declare "x" |> bind (setVar "x" 42) |> get
+
+    Assert.Equal<int option>(Some 42, st |> aexprEval (Num 42))
+    Assert.Equal<int option>(Some 42, st |> aexprEval (Var "x"))
+    Assert.Equal<int option>(None, st |> aexprEval (Var "y"))
+    Assert.Equal<int option>(Some 21, st |> aexprEval (Div (Var "x", Num 2)))
+    Assert.Equal<int option>(None, st |> aexprEval (Div (Var "x", Num 0)))
+
+
+[<Fact>]
+let TestAExprEval2 () =
+    let emptyState = mkState ()
+    let st = emptyState |> declare "x" |> bind (setVar "x" 42) |> get
+
+    Assert.Equal<int option>(st |> aexprEval (Num 42), st |> aexprEval2 (Num 42))
+    Assert.Equal<int option>(st |> aexprEval (Var "x"), st |> aexprEval2 (Var "x"))
+    Assert.Equal<int option>(st |> aexprEval (Var "y"), st |> aexprEval2 (Var "y"))
+    Assert.Equal<int option>(st |> aexprEval (Div (Var "x", Num 2)), st |> aexprEval2 (Div (Var "x", Num 2)))
+    Assert.Equal<int option>(st |> aexprEval (Div (Var "x", Num 0)), st |> aexprEval2 (Div (Var "x", Num 0)))
