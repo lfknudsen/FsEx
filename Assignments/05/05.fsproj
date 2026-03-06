@@ -8,6 +8,7 @@
 
     <ItemGroup>
         <Compile Include="Tests.fs"/>
+        <Compile Include="YellowTests.fs" />
         <ProjectReference Include="..\Assignment5\Assignment5.fsproj" />
     </ItemGroup>
 
