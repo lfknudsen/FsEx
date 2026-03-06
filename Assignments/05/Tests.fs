@@ -55,6 +55,34 @@ let TestState () =
     )
 
 [<Fact>]
+let AExprEvalOld () =
+    let st = mkState ()
+    Assert.Equal(Some 4, aexprEval (Num 4) st)
+    Assert.Equal(Some 10, aexprEval (Num 4 .+. Num 2 .*. Num 3) st)
+    Assert.Equal(Some 18, aexprEval ((Num 4 .+. Num 2) .*. Num 3) st)
+    Assert.Equal(None, aexprEval ((Num 4 .+. Num 2) ./. Num 0) st)
+    Assert.Equal(Some 42, aexprEval (Num 42 .*. (Num 13 .%. Num 3)) st)
+    Assert.Equal(None, aexprEval (Num 42 .*. (Num 13 .%. Num 0)) st)
+
+[<Fact>]
+let AExprEvalOld2 () =
+    let st = mkState ()
+    Assert.Equal(aexprEval (Num 4) st, aexprEval2 (Num 4) st)
+    Assert.Equal(aexprEval (Num 4 .+. Num 2 .*. Num 3) st, aexprEval2 (Num 4 .+. Num 2 .*. Num 3) st)
+    Assert.Equal(aexprEval ((Num 4 .+. Num 2) .*. Num 3) st, aexprEval2 ((Num 4 .+. Num 2) .*. Num 3) st)
+    Assert.Equal(aexprEval ((Num 4 .+. Num 2) ./. Num 0) st, aexprEval2 ((Num 4 .+. Num 2) ./. Num 0) st)
+
+    Assert.Equal(
+        aexprEval (Num 42 .*. (Num 13 .%. Num 3)) st,
+        aexprEval2 (Num 42 .*. (Num 13 .%. Num 3)) st
+    )
+
+    Assert.Equal(
+        aexprEval (Num 42 .*. (Num 13 .%. Num 0)) st,
+        aexprEval2 (Num 42 .*. (Num 13 .%. Num 0)) st
+    )
+
+[<Fact>]
 let TestAExprEval () =
     let emptyState = mkState ()
     let st = emptyState |> declare "x" |> bind (setVar "x" 42) |> get
