@@ -16,6 +16,8 @@ Project("{F2A71F9B-5D33-465A-A702-920D77279786}") = "05", "05\05.fsproj", "{EDDA
 EndProject
 Project("{F2A71F9B-5D33-465A-A702-920D77279786}") = "Assignment6", "Assignment6\Assignment6.fsproj", "{E4EF4AAF-8F78-4025-8B5E-0218AE36CBCA}"
 EndProject
+Project("{F2A71F9B-5D33-465A-A702-920D77279786}") = "06", "06\06.fsproj", "{D7EC45B0-9163-4B15-B343-D01D574CD5A2}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -54,5 +56,9 @@ Global
 		{E4EF4AAF-8F78-4025-8B5E-0218AE36CBCA}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{E4EF4AAF-8F78-4025-8B5E-0218AE36CBCA}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{E4EF4AAF-8F78-4025-8B5E-0218AE36CBCA}.Release|Any CPU.Build.0 = Release|Any CPU
+		{D7EC45B0-9163-4B15-B343-D01D574CD5A2}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{D7EC45B0-9163-4B15-B343-D01D574CD5A2}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{D7EC45B0-9163-4B15-B343-D01D574CD5A2}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{D7EC45B0-9163-4B15-B343-D01D574CD5A2}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 EndGlobal
