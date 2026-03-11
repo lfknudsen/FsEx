@@ -7,30 +7,33 @@ open Interpreter.State
 open Interpreter.Programs
 open Result
 
-[<Fact>]
-let TestReservedVariableName () =
-    Assert.False(reservedVariableName "hello")
-    Assert.True(reservedVariableName "if")
-    Assert.True(reservedVariableName "then")
-    Assert.True(reservedVariableName "else")
-    Assert.True(reservedVariableName "while")
-    Assert.True(reservedVariableName "declare")
-    Assert.True(reservedVariableName "print")
-    Assert.True(reservedVariableName "random")
-    Assert.True(reservedVariableName "fork")
-    Assert.True(reservedVariableName "__result__")
-    Assert.False(reservedVariableName "")
-    Assert.False(reservedVariableName "i")
+[<Theory>]
+[<InlineData("if")>]
+[<InlineData("then")>]
+[<InlineData("else")>]
+[<InlineData("while")>]
+[<InlineData("declare")>]
+[<InlineData("print")>]
+[<InlineData("random")>]
+[<InlineData("fork")>]
+[<InlineData("__result__")>]
+let TestReservedVariableName (var : string) =
+    Assert.Equal<Result<int, error>>(Error (ReservedName var), () |> mkState |> declare var |> bind (getVar var))
 
-[<Fact>]
-let TestValidVariableName () =
-    Assert.True(validVariableName "hello")
-    Assert.True(validVariableName "_hello")
-    Assert.True(validVariableName "_1hello")
-    Assert.False(validVariableName "1_hello")
-    Assert.False(validVariableName "1hello")
-    Assert.True(validVariableName "h")
-    Assert.False(validVariableName "")
+[<Theory>]
+[<InlineData("hello")>]
+[<InlineData("_hello")>]
+[<InlineData("_1hello")>]
+[<InlineData("h")>]
+let TestValidVariableName (var : string) =
+    Assert.Equal<Result<int,error>>(Ok 0, () |> mkState |> declare var |> bind (getVar var))
+
+[<Theory>]
+[<InlineData("1_hello")>]
+[<InlineData("1hello")>]
+[<InlineData("")>]
+let TestInvalidVariableName (var : string) =
+    Assert.Equal<Result<int,error>>(Error (InvalidVarName var), () |> mkState |> declare var |> bind (getVar var))
 
 [<Fact>]
 let TestState () =
