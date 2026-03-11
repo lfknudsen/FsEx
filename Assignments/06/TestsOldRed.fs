@@ -60,31 +60,31 @@ let AExprEvalOld () =
 [<Fact>]
 let AExprEvalOld2 () =
     let st = mkState ()
-    Assert.Equal(aexprEval (Num 4) st, aexprEval2 (Num 4) st)
+    Assert.Equal(aexprEval (Num 4) st, aexprEval (Num 4) st)
 
     Assert.Equal(
         aexprEval (Num 4 .+. Num 2 .*. Num 3) st,
-        aexprEval2 (Num 4 .+. Num 2 .*. Num 3) st
+        aexprEval (Num 4 .+. Num 2 .*. Num 3) st
     )
 
     Assert.Equal(
         aexprEval ((Num 4 .+. Num 2) .*. Num 3) st,
-        aexprEval2 ((Num 4 .+. Num 2) .*. Num 3) st
+        aexprEval ((Num 4 .+. Num 2) .*. Num 3) st
     )
 
     Assert.Equal(
         aexprEval ((Num 4 .+. Num 2) ./. Num 0) st,
-        aexprEval2 ((Num 4 .+. Num 2) ./. Num 0) st
+        aexprEval ((Num 4 .+. Num 2) ./. Num 0) st
     )
 
     Assert.Equal(
         aexprEval (Num 42 .*. (Num 13 .%. Num 3)) st,
-        aexprEval2 (Num 42 .*. (Num 13 .%. Num 3)) st
+        aexprEval (Num 42 .*. (Num 13 .%. Num 3)) st
     )
 
     Assert.Equal(
         aexprEval (Num 42 .*. (Num 13 .%. Num 0)) st,
-        aexprEval2 (Num 42 .*. (Num 13 .%. Num 0)) st
+        aexprEval (Num 42 .*. (Num 13 .%. Num 0)) st
     )
 
 [<Fact>]
@@ -101,30 +101,6 @@ let TestAExprEval () =
     Assert.Equal<Result<int, error>>(Error(VarNotDeclared "y"), st |> aexprEval (Var "y"))
     Assert.Equal<Result<int, error>>(Ok 21, st |> aexprEval (Div(Var "x", Num 2)))
     Assert.Equal<Result<int, error>>(Error DivisionByZero, st |> aexprEval (Div(Var "x", Num 0)))
-
-
-[<Fact>]
-let TestAExprEval2 () =
-    let emptyState = mkState ()
-
-    let st: state =
-        match emptyState |> declare "x" |> bind (setVar "x" 42) with
-        | Ok result -> result
-        | Error e -> failwith "Error during test setup."
-
-    Assert.Equal<Result<int, error>>(st |> aexprEval (Num 42), st |> aexprEval2 (Num 42))
-    Assert.Equal<Result<int, error>>(st |> aexprEval (Var "x"), st |> aexprEval2 (Var "x"))
-    Assert.Equal<Result<int, error>>(st |> aexprEval (Var "y"), st |> aexprEval2 (Var "y"))
-
-    Assert.Equal<Result<int, error>>(
-        st |> aexprEval (Div(Var "x", Num 2)),
-        st |> aexprEval2 (Div(Var "x", Num 2))
-    )
-
-    Assert.Equal<Result<int, error>>(
-        st |> aexprEval (Div(Var "x", Num 0)),
-        st |> aexprEval2 (Div(Var "x", Num 0))
-    )
 
 [<Fact>]
 let assign1 () =
