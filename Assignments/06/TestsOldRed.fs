@@ -1,4 +1,4 @@
-﻿module TestsOldRed
+﻿module _06.TestsOldRed
 
 open Xunit
 open Interpreter.Language

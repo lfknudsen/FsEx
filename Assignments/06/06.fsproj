@@ -7,6 +7,7 @@
     </PropertyGroup>
 
     <ItemGroup>
+        <Compile Include="TestsMemory.fs" />
         <Compile Include="TestsOldRed.fs" />
         <ProjectReference Include="../Assignment6/Assignment6.fsproj"/>
     </ItemGroup>
