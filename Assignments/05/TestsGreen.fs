@@ -1,4 +1,4 @@
-﻿module Tests
+﻿module TestsGreen
 
 open Interpreter
 open Interpreter.Language

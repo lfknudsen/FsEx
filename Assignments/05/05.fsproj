@@ -7,8 +7,9 @@
     </PropertyGroup>
 
     <ItemGroup>
-        <Compile Include="Tests.fs"/>
-        <Compile Include="YellowTests.fs" />
+        <Compile Include="TestsGreen.fs" />
+        <Compile Include="TestsRed.fs" />
+        <Compile Include="TestsYellow.fs" />
         <ProjectReference Include="..\Assignment5\Assignment5.fsproj" />
     </ItemGroup>
 
