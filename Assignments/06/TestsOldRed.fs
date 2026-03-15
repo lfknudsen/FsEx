@@ -18,7 +18,7 @@ open Result
 [<InlineData("fork")>]
 [<InlineData("__result__")>]
 let TestReservedVariableName (var : string) =
-    Assert.Equal<Result<int, error>>(Error (ReservedName var), () |> mkState |> declare var |> bind (getVar var))
+    Assert.Equal<Result<int, error>>(Error (ReservedName var), 10 |> mkState |> declare var |> bind (getVar var))
 
 [<Theory>]
 [<InlineData("hello")>]
@@ -26,33 +26,33 @@ let TestReservedVariableName (var : string) =
 [<InlineData("_1hello")>]
 [<InlineData("h")>]
 let TestValidVariableName (var : string) =
-    Assert.Equal<Result<int,error>>(Ok 0, () |> mkState |> declare var |> bind (getVar var))
+    Assert.Equal<Result<int,error>>(Ok 0, 10 |> mkState |> declare var |> bind (getVar var))
 
 [<Theory>]
 [<InlineData("1_hello")>]
 [<InlineData("1hello")>]
 [<InlineData("")>]
 let TestInvalidVariableName (var : string) =
-    Assert.Equal<Result<int,error>>(Error (InvalidVarName var), () |> mkState |> declare var |> bind (getVar var))
+    Assert.Equal<Result<int,error>>(Error (InvalidVarName var), 10 |> mkState |> declare var |> bind (getVar var))
 
 [<Fact>]
 let TestState () =
-    Assert.Equal<Result<int, error>>(Error(VarNotDeclared "x"), () |> mkState |> getVar "x")
-    Assert.Equal<Result<int, error>>(Ok 0, () |> mkState |> declare "x" |> bind (getVar "x"))
+    Assert.Equal<Result<int, error>>(Error(VarNotDeclared "x"), 10 |> mkState |> getVar "x")
+    Assert.Equal<Result<int, error>>(Ok 0, 10 |> mkState |> declare "x" |> bind (getVar "x"))
 
     Assert.Equal<Result<int, error>>(
         Ok 42,
-        () |> mkState |> declare "x" |> bind (setVar "x" 42) |> bind (getVar "x")
+        10 |> mkState |> declare "x" |> bind (setVar "x" 42) |> bind (getVar "x")
     )
 
     Assert.Equal<Result<int, error>>(
         Error(InvalidVarName "1x"),
-        () |> mkState |> declare "1x" |> bind (setVar "1x" 42) |> bind (getVar "1x")
+        10 |> mkState |> declare "1x" |> bind (setVar "1x" 42) |> bind (getVar "1x")
     )
 
 [<Fact>]
 let AExprEvalOld () =
-    let st = mkState ()
+    let st = mkState 10
     Assert.Equal(Ok 4, aexprEval (Num 4) st)
     Assert.Equal(Ok 10, aexprEval (Num 4 .+. Num 2 .*. Num 3) st)
     Assert.Equal(Ok 18, aexprEval ((Num 4 .+. Num 2) .*. Num 3) st)
@@ -62,7 +62,7 @@ let AExprEvalOld () =
 
 [<Fact>]
 let AExprEvalOld2 () =
-    let st = mkState ()
+    let st = mkState 10
     Assert.Equal(aexprEval (Num 4) st, aexprEval (Num 4) st)
 
     Assert.Equal(
@@ -92,7 +92,7 @@ let AExprEvalOld2 () =
 
 [<Fact>]
 let TestAExprEval () =
-    let emptyState = mkState ()
+    let emptyState = mkState 10
 
     let st: state =
         match emptyState |> declare "x" |> bind (setVar "x" 42) with
@@ -108,7 +108,7 @@ let TestAExprEval () =
 [<Fact>]
 let assign1 () =
     let assign x = Seq(Declare "result", Assign("result", Num x))
-    Assert.Equal<Result<int, error>>(Ok 1, () |> mkState |> stmntEval (assign 1) |> bind (getVar "result"))
+    Assert.Equal<Result<int, error>>(Ok 1, 10 |> mkState |> stmntEval (assign 1) |> bind (getVar "result"))
 
 
 [<Fact>]
@@ -116,86 +116,86 @@ let assign2 () =
     let assign x = Seq(Declare "result",
                        Seq(Assign("result", Num x),
                            Assign("result", Num (x + 1))))
-    Assert.Equal<Result<int, error>>(Ok 2, () |> mkState |> stmntEval (assign 1) |> bind (getVar "result"))
+    Assert.Equal<Result<int, error>>(Ok 2, 10 |> mkState |> stmntEval (assign 1) |> bind (getVar "result"))
 
 [<Fact>]
 let assign3 () =
     let assign = Seq(Declare "result",
                        If(Not FF, Assign("result", Num 2), Assign("result", Num 2)))
-    Assert.Equal<Result<int, error>>(Ok 2, () |> mkState |> stmntEval assign |> bind (getVar "result"))
+    Assert.Equal<Result<int, error>>(Ok 2, 10 |> mkState |> stmntEval assign |> bind (getVar "result"))
 
 [<Fact>]
 let assign4 () =
     let assign = Seq(Declare "result",
                        If(Not TT, Assign("result", Num 2), Assign("result", Num 2)))
-    Assert.Equal<Result<int, error>>(Ok 2, () |> mkState |> stmntEval assign |> bind (getVar "result"))
+    Assert.Equal<Result<int, error>>(Ok 2, 10 |> mkState |> stmntEval assign |> bind (getVar "result"))
 
 
 [<Fact>]
 let assign5 () =
     let assign = Seq(Declare "result",
                        If(FF, Assign("result", Num 3), Assign("result", Num 2)))
-    Assert.Equal<Result<int, error>>(Ok 2, () |> mkState |> stmntEval assign |> bind (getVar "result"))
+    Assert.Equal<Result<int, error>>(Ok 2, 10 |> mkState |> stmntEval assign |> bind (getVar "result"))
 
 [<Fact>]
 let assign6 () =
     let assign = Seq(Declare "result",
                        If(TT, Assign("result", Num 3), Assign("result", Num 2)))
-    Assert.Equal<Result<int, error>>(Ok 3, () |> mkState |> stmntEval assign |> bind (getVar "result"))
+    Assert.Equal<Result<int, error>>(Ok 3, 10 |> mkState |> stmntEval assign |> bind (getVar "result"))
 
 [<Fact>]
 let AssignBeforeTrueBranch () =
     let assign = Seq(Declare "result",
                      Seq(Assign("result", Num 5),
                        If(TT, Assign("result", Num 3), Assign("result", Num 2))))
-    Assert.Equal<Result<int, error>>(Ok 3, () |> mkState |> stmntEval assign |> bind (getVar "result"))
+    Assert.Equal<Result<int, error>>(Ok 3, 10 |> mkState |> stmntEval assign |> bind (getVar "result"))
 
 [<Fact>]
 let AssignBeforeFalseBranch () =
     let assign = Seq(Declare "result",
                      Seq(Assign("result", Num 5),
                        If(FF, Assign("result", Num 3), Assign("result", Num 2))))
-    Assert.Equal<Result<int, error>>(Ok 2, () |> mkState |> stmntEval assign |> bind (getVar "result"))
+    Assert.Equal<Result<int, error>>(Ok 2, 10 |> mkState |> stmntEval assign |> bind (getVar "result"))
 
 [<Fact>]
 let AssignBeforeTrueBranchEq () =
     let assign = Seq(Declare "result",
                      Seq(Assign("result", Num 5),
                        If(Eq(Num 1, Num 1), Assign("result", Num 3), Assign("result", Num 2))))
-    Assert.Equal<Result<int, error>>(Ok 3, () |> mkState |> stmntEval assign |> bind (getVar "result"))
+    Assert.Equal<Result<int, error>>(Ok 3, 10 |> mkState |> stmntEval assign |> bind (getVar "result"))
 
 [<Fact>]
 let defaultValue () =
     let assign = Declare "result"
-    Assert.Equal<Result<int, error>>(Ok 0, () |> mkState |> stmntEval assign |> bind (getVar "result"))
+    Assert.Equal<Result<int, error>>(Ok 0, 10 |> mkState |> stmntEval assign |> bind (getVar "result"))
 
 [<Fact>]
 let TestFactorial1 () =
-    let res = () |> mkState |> stmntEval (factorial 5) |> bind (getVar "result")
+    let res = 10 |> mkState |> stmntEval (factorial 5) |> bind (getVar "result")
     Assert.Equal<Result<int, error>>(Ok 120, res)
 
 [<Fact>]
 let TestFactorial2 () =
-    let res = () |> mkState |> stmntEval (factorial2 5) |> bind (getVar "result")
+    let res = 10 |> mkState |> stmntEval (factorial2 5) |> bind (getVar "result")
     Assert.Equal<Result<int, error>>(Ok 120, res)
 
 [<Fact>]
 let TestFactorialErr1 () =
     Assert.Equal<Result<int, error>>(
         Error(VarAlreadyExists "result"),
-        () |> mkState |> stmntEval (factorial_err1 5) |> bind (getVar "result")
+        10 |> mkState |> stmntEval (factorial_err1 5) |> bind (getVar "result")
     )
 
 [<Fact>]
 let TestFactorialErr2 () =
     Assert.Equal<Result<int, error>>(
         Error(VarNotDeclared "y"),
-        () |> mkState |> stmntEval (factorial_err2 5) |> bind (getVar "result")
+        10 |> mkState |> stmntEval (factorial_err2 5) |> bind (getVar "result")
     )
 
 [<Fact>]
 let TestFactorialErr3 () =
     Assert.Equal<Result<int, error>>(
         Error DivisionByZero,
-        () |> mkState |> stmntEval (factorial_err3 5) |> bind (getVar "result")
+        10 |> mkState |> stmntEval (factorial_err3 5) |> bind (getVar "result")
     )
