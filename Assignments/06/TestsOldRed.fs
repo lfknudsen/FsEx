@@ -53,41 +53,41 @@ let TestState () =
 [<Fact>]
 let AExprEvalOld () =
     let st = mkState 10
-    Assert.Equal(Ok 4, aexprEval (Num 4) st)
-    Assert.Equal(Ok 10, aexprEval (Num 4 .+. Num 2 .*. Num 3) st)
-    Assert.Equal(Ok 18, aexprEval ((Num 4 .+. Num 2) .*. Num 3) st)
-    Assert.Equal(Error DivisionByZero, aexprEval ((Num 4 .+. Num 2) ./. Num 0) st)
-    Assert.Equal(Ok 42, aexprEval (Num 42 .*. (Num 13 .%. Num 3)) st)
-    Assert.Equal(Error DivisionByZero, aexprEval (Num 42 .*. (Num 13 .%. Num 0)) st)
+    Assert.Equal(Ok 4, arithEval (Num 4) st)
+    Assert.Equal(Ok 10, arithEval (Num 4 .+. Num 2 .*. Num 3) st)
+    Assert.Equal(Ok 18, arithEval ((Num 4 .+. Num 2) .*. Num 3) st)
+    Assert.Equal(Error DivisionByZero, arithEval ((Num 4 .+. Num 2) ./. Num 0) st)
+    Assert.Equal(Ok 42, arithEval (Num 42 .*. (Num 13 .%. Num 3)) st)
+    Assert.Equal(Error DivisionByZero, arithEval (Num 42 .*. (Num 13 .%. Num 0)) st)
 
 [<Fact>]
 let AExprEvalOld2 () =
     let st = mkState 10
-    Assert.Equal(aexprEval (Num 4) st, aexprEval (Num 4) st)
+    Assert.Equal(arithEval (Num 4) st, arithEval (Num 4) st)
 
     Assert.Equal(
-        aexprEval (Num 4 .+. Num 2 .*. Num 3) st,
-        aexprEval (Num 4 .+. Num 2 .*. Num 3) st
+        arithEval (Num 4 .+. Num 2 .*. Num 3) st,
+        arithEval (Num 4 .+. Num 2 .*. Num 3) st
     )
 
     Assert.Equal(
-        aexprEval ((Num 4 .+. Num 2) .*. Num 3) st,
-        aexprEval ((Num 4 .+. Num 2) .*. Num 3) st
+        arithEval ((Num 4 .+. Num 2) .*. Num 3) st,
+        arithEval ((Num 4 .+. Num 2) .*. Num 3) st
     )
 
     Assert.Equal(
-        aexprEval ((Num 4 .+. Num 2) ./. Num 0) st,
-        aexprEval ((Num 4 .+. Num 2) ./. Num 0) st
+        arithEval ((Num 4 .+. Num 2) ./. Num 0) st,
+        arithEval ((Num 4 .+. Num 2) ./. Num 0) st
     )
 
     Assert.Equal(
-        aexprEval (Num 42 .*. (Num 13 .%. Num 3)) st,
-        aexprEval (Num 42 .*. (Num 13 .%. Num 3)) st
+        arithEval (Num 42 .*. (Num 13 .%. Num 3)) st,
+        arithEval (Num 42 .*. (Num 13 .%. Num 3)) st
     )
 
     Assert.Equal(
-        aexprEval (Num 42 .*. (Num 13 .%. Num 0)) st,
-        aexprEval (Num 42 .*. (Num 13 .%. Num 0)) st
+        arithEval (Num 42 .*. (Num 13 .%. Num 0)) st,
+        arithEval (Num 42 .*. (Num 13 .%. Num 0)) st
     )
 
 [<Fact>]
@@ -99,11 +99,11 @@ let TestAExprEval () =
         | Ok result -> result
         | Error e -> failwith "Error during test setup."
 
-    Assert.Equal<Result<int, error>>(Ok 42, st |> aexprEval (Num 42))
-    Assert.Equal<Result<int, error>>(Ok 42, st |> aexprEval (Var "x"))
-    Assert.Equal<Result<int, error>>(Error(VarNotDeclared "y"), st |> aexprEval (Var "y"))
-    Assert.Equal<Result<int, error>>(Ok 21, st |> aexprEval (Div(Var "x", Num 2)))
-    Assert.Equal<Result<int, error>>(Error DivisionByZero, st |> aexprEval (Div(Var "x", Num 0)))
+    Assert.Equal<Result<int, error>>(Ok 42, st |> arithEval (Num 42))
+    Assert.Equal<Result<int, error>>(Ok 42, st |> arithEval (Var "x"))
+    Assert.Equal<Result<int, error>>(Error(VarNotDeclared "y"), st |> arithEval (Var "y"))
+    Assert.Equal<Result<int, error>>(Ok 21, st |> arithEval (Div(Var "x", Num 2)))
+    Assert.Equal<Result<int, error>>(Error DivisionByZero, st |> arithEval (Div(Var "x", Num 0)))
 
 [<Fact>]
 let assign1 () =
